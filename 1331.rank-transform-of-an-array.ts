@@ -60,8 +60,13 @@
  */
 
 // @lc code=start
+interface IRank {
+  value: number;
+  index: number;
+  rank: number;
+}
 function arrayRankTransform(arr: number[]): number[] {
-  const indexArr = []
+  const indexArr: IRank[] = []
   const arrMap = arr.map((item, i) => {
     const obj = {
       value: item,
