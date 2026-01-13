@@ -7,6 +7,7 @@
 // @lc code=start
 /**
  * 解法1：通过计算间距的方法，发现在中间行时，下一个位置的间距是变化的,找规律有点麻烦，还是用二维数组
+ * 解法2：Z子掉头算法是核心
  * @param {string} s
  * @param {number} numRows
  * @return {string}
@@ -14,29 +15,22 @@
 var convert = function (s, numRows) {
   let arr = [];
   let str = "";
-  let goUp = false;
-  let goDown = true;
+  let direction = 0;
   for (let i = 0; i < numRows; i++) {
     arr.push([]);
   }
   let len = 0;
   for (let i = 0; i < s.length; i++) {
+    // 1: 顺序很重要：先push，再转向
     arr[len].push(s[i]);
-    if (len < numRows - 1 && goDown) {
-      len++;
-    } else if (len > numRows - 1 && goUp) {
-      len--;
+    const changeDir = numRows - 1;
+    if (numRows > 1) {
+      // 转向时机是列的数量 - 1: [0, 1, 2, 1, 0] = [_, 1, 1, -1, -1]
+      direction = Math.floor(i / changeDir) % 2 === 0 ? 1 : -1;
     }
-    if (len >= numRows - 1 && goDown) {
-      goDown = false;
-      goUp = true;
-    } else if (len <= 0 && goUp) {
-      goDown = true;
-      goUp = false;
-    }
+    len += direction;
   }
   for (let i = 0; i < numRows; i++) {
-    console.log("arr[i]:", i, arr[i].join(""));
     str += arr[i].join("");
   }
   return str;
