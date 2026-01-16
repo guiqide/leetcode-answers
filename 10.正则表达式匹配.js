@@ -20,34 +20,38 @@
  * 2、p需要一个自己的下标，而不是直接用i,举个例子s=aab，p=c*a*b
  */
 var isMatch = function (s, p) {
-  const str = s;
-  const sLen = s.length;
-  const pLen = p.length;
-  const len = sLen + pLen;
-  debugger;
-  dp = Array.from({ length: len }, () => Array(len).fill(false));
-  dp[0][0] = true;
-  for (let j = 1; j < pLen + 1; j++) {
-    if (p[j - 1] === "*") {
-      dp[0][j] = dp[0][j - 2];
-    }
+  const m = s.length;
+  const n = p.length;
+
+  function matches(i, j) {
+    if (i === 0) return false;
+    if (p[j - 1] === ".") return true;
+    return s[i - 1] === p[j - 1];
   }
 
-  for (let i = 1; i < sLen + 1; i++) {
-    for (let j = 1; j < pLen + 1; j++) {
-      if (s[i - 1] === p[j - 1] || p[j - 1] === ".") {
-        dp[i][j] = dp[i - 1][j - 1];
-      } else if (p[j - 1] === "*") {
-        if (s[i - 1] === p[j - 2] || p[j - 2] === ".") {
-          dp[i][j] = dp[i][j - 2] || dp[i - 1][j - 2] || dp[i - 1][j];
-        } else {
-          dp[i][j] = dp[i][j - 2];
+  const f = Array.from({ length: m + 1 }, () => Array(n + 1).fill(false));
+
+  f[0][0] = true;
+
+  for (let i = 0; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      if (p[j - 1] === "*") {
+        // 不使用 *
+        f[i][j] = f[i][j] || f[i][j - 2];
+
+        // 使用 *
+        if (matches(i, j - 1)) {
+          f[i][j] = f[i][j] || f[i - 1][j];
+        }
+      } else {
+        if (matches(i, j)) {
+          f[i][j] = f[i][j] || f[i - 1][j - 1];
         }
       }
     }
   }
 
-  return dp[sLen][pLen];
+  return f[m][n];
 };
 
 // @lc code=end
